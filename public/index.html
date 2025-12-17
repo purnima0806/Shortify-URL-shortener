@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shortify| URL Shortener</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #0c0c0c;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background: #ad9ff2;
+      color: rgb(0, 0, 0);
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h2 {
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .navbar a {
+      color: rgb(0, 0, 0);
+      margin-left: 20px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      background: #d8c7f0;
+      color: rgb(0, 0, 0);
+      padding: 60px 40px;
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      min-height: 80vh;
+    }
+
+    .hero-left {
+      max-width: 50%;
+    }
+
+    .hero-left h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    .hero-left p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #000000;
+    }
+
+    .hero-left button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      background: #1d56f2;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* CARD */
+    .card {
+      background: white;
+      padding: 30px;
+      width: 380px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      color: black;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      height: 45px;
+      padding: 0 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    button.shorten {
+      width: 100%;
+      height: 45px;
+      background: #1f8f3a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 15px;
+      word-break: break-all;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        flex-direction: column;
+      }
+      .hero-left {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <h2>Shortify</h2>
+    <div>
+      <a href="/">Home</a>
+      <a href="/plans.html">Plans</a>
+      <a href="/features.html">Features</a>
+      <a href="/login.html">Login</a>
+      
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <!-- LEFT -->
+    <div class="hero-left">
+      <h1>URL Shortener, Branded Short Links </h1>
+      <p>
+        This is a URL shortener mini project where users can convert long URLs into short links.
+The shortened link redirects to the original website, and a QR code is generated for easy sharing.
+The project includes a basic frontend connected to a backend service.
+
+        
+         </p>
+         <button onclick="window.location.href='/login.html'">
+          Project Demo
+        </button>
+        
+    </div>
+
+    <!-- RIGHT CARD -->
+    <div class="card">
+      <h3>🔗 Shorten a Link</h3>
+
+      <input
+        type="text"
+        id="longUrl"
+        placeholder="Paste long URL here"
+      />
+
+      <button class="shorten" onclick="shortenUrl()">Shorten Link</button>
+
+      <div class="result" id="result"></div>
+      <div class="error" id="error"></div>
+    </div>
+  </div>
+
+  <script>
+    function isValidURL(url) {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    async function shortenUrl() {
+      const longUrl = document.getElementById("longUrl").value;
+      const result = document.getElementById("result");
+      const error = document.getElementById("error");
+
+      result.innerHTML = "";
+      error.innerText = "";
+
+      if (!longUrl) {
+        error.innerText = "Please enter a URL.";
+        return;
+      }
+
+      if (!isValidURL(longUrl)) {
+        error.innerText = "Invalid URL. Please enter a valid link.";
+        return;
+      }
+
+      const res = await fetch("/shorten", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ longUrl })
+      });
+
+      const data = await res.json();
+
+      result.innerHTML = `
+  <p>Short URL:</p>
+  <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>
+
+  <p style="margin-top:15px;">QR Code:</p>
+  <img 
+    src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.shortUrl)}"
+    alt="QR Code"
+  />
+`;
+   }
+  </script>
+
+</body>
+</html>
