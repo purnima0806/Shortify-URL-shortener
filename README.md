@@ -22,5 +22,5 @@ This project is built to understand backend development, REST APIs, and basic fr
 
 ---
 
-## 📂 Project Structure
+
 
